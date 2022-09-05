@@ -1,11 +1,12 @@
 import pickle as pk
 import kaldi_io
+from kaldiio import WriteHelper
 import numpy as np
 import argparse
 import os
 
 def main(args):
-    pre_embd_path = args.pre_embd_path
+
     embd_file = args.embd_file
     ark_file = args.out_ark_file
     scp_file = args.out_scp_file
@@ -15,17 +16,21 @@ def main(args):
 
     print(len(emb))
 
-    ark_scp_output='ark:| copy-feats --compress=true ark:- ark,scp:' + ark_file + "," + scp_file
-    with kaldi_io.open_or_fd(ark_scp_output,'wb') as f:
+    # ark_scp_output='ark:| copy-feats --compress=true ark:- ark,scp:' + ark_file + "," + scp_file
+    # with kaldi_io.open_or_fd(ark_scp_output,'w') as f:
     # with open(ark_file,'wb') as f:
-        for key in sorted(emb.keys()):
-          vec = emb[key].reshape(1,-1)
-          kaldi_io.write_mat(f, vec, key=key)
+    #     for key in sorted(emb.keys()):
+    #       vec = emb[key]
+    #       kaldi_io.write_vec_flt(f, vec, key=key)
+    ark_scp_output = 'ark,scp:'+ark_file+','+scp_file
+    with WriteHelper(ark_scp_output) as writer:
+        for key in emb.keys():
+          vec = emb[key]
+          writer(key,vec)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Make ASVspoof embeddings")
-    parser.add_argument("--pre_embd_path", required=True, help="The init pre_emb path")
     parser.add_argument("--embd_file", required=True, help="The init embd file")
     parser.add_argument("--out_ark_file", required=True, help="The init ark file path")
     parser.add_argument("--out_scp_file", required=True, help="The init scp file path")
