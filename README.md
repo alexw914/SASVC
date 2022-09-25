@@ -6,10 +6,10 @@ This project provide three ways to realize Sooofing-aware Speaker Verification s
 ## Score Fusion
 It takes PLDA backend as classifier, in this way. Unsupervised domain adaptation and supervised domain adaptation were applied in score fusion method to improve the speaker verification performance. It needs kaldi and asv-subtools.
 
-## Emd Fusion
+## Embedding Fusion
 Using Conv1D layer and SEModule to train a SASV model using embeddings from pre-trained asv system and countermeature system. 
 
 ## Multi-task
 In this method, i used a pretrained asv system and Attentive statistic pooling layers and backend to build a SASV model. In this way, speechbrain toolkit is needed
 
-It's not finished!!!
+###It's not finished!!!
