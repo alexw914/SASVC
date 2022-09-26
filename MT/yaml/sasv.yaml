@@ -1,0 +1,167 @@
+seed: 2345
+__set_seed: !!python/object/apply:torch.manual_seed [!ref <seed>]
+
+rir_folder : /home/alex/dataset/VoxCeleb/
+data_folder: spk_meta
+output_folder: !ref ./results/sasv/<seed>
+save_folder: !ref <output_folder>/save
+train_log: !ref <output_folder>/train_log.txt
+
+train_annotation: !ref <data_folder>/cm_sb_train.json
+dev_annotation: !ref <data_folder>/sasv_sb_dev.json
+eval_annotation: !ref <data_folder>/sasv_sb_eval.json
+
+pretrain_path: speechbrain/spkrec-ecapa-voxceleb
+# Feature parameters
+n_mels: 80
+left_frames: 0
+right_frames: 0
+deltas: False
+
+emb_dim: 192
+
+# Training Parameters
+sample_rate: 16000
+sentence_len: 4.0
+number_of_epochs: 20
+batch_size: 6
+lr_start: 0.0001
+
+dataloader_options:
+  batch_size: !ref <batch_size>
+  shuffle: True
+  drop_last: True
+  num_workers: 6
+  pin_memory: True 
+
+validloader_options:
+  batch_size: 24
+  shuffle: False
+  drop_last: False
+  num_workers: 6
+  pin_memory: True 
+
+ckpt_interval_minutes: 20 # save checkpoint every N min
+#########-------------------Data----------------------##########
+#########-------------------End-----------------------##########
+
+train_logger: !new:speechbrain.utils.train_logger.FileTrainLogger
+  save_file: !ref <train_log>
+
+asv_loss_metric: !new:loss.aamsoftmax.LossFunction
+  nOut: 192 
+  nClasses: 20
+    
+cm_loss_metric: !new:loss.oneclass.OCSoftmax
+  in_dim: 256 
+
+weight: !new:torch.FloatTensor
+  data: [0.05,0.95]
+
+sasv_loss_metric: !new:torch.nn.CrossEntropyLoss
+  weight: !ref <weight>
+
+#########-----------------Augment---------------------##########
+#########-----------------Start-----------------------##########
+augment_wavedrop: !new:speechbrain.lobes.augment.TimeDomainSpecAugment
+    sample_rate: !ref <sample_rate>
+    speeds: [100]
+
+augment_speed: !new:speechbrain.lobes.augment.TimeDomainSpecAugment
+    sample_rate: !ref <sample_rate>
+    speeds: [95, 100, 105]
+
+add_rev_noise: !new:speechbrain.lobes.augment.EnvCorrupt
+    openrir_folder: !ref <rir_folder>
+    openrir_max_noise_len: 2.0  # seconds
+    reverb_prob: 0.5
+    noise_prob: 0.5
+    noise_snr_low: 0
+    noise_snr_high: 15
+    rir_scale_factor: 1.0
+
+augment_pipeline: [
+    !ref <augment_wavedrop>,
+    !ref <augment_speed>,
+    !ref <add_rev_noise>
+]
+concat_augment: True
+#########-----------------Augment---------------------##########
+#########------------------End-----------------------##########
+
+
+#########-----------------Modules---------------------##########
+#########-----------------Start-----------------------##########
+mean_var_norm: !new:speechbrain.processing.features.InputNormalization
+  norm_type: sentence
+  std_norm: False
+
+compute_fbank: !new:speechbrain.lobes.features.Fbank
+    n_mels: !ref <n_mels>
+    left_frames: !ref <left_frames>
+    right_frames: !ref <right_frames>
+    deltas: !ref <deltas>
+
+embedding_model: !new:models.ecapatdnn.ECAPA_TDNN
+    input_size: !ref <n_mels>
+    channels: [1024, 1024, 1024, 1024, 3072]
+    kernel_sizes: [5, 3, 3, 3, 1]
+    dilations: [1, 2, 3, 4, 1]
+    attention_channels: 128
+    lin_neurons: 192
+
+cm_asp_layer: !new:models.ecapatdnn.ASP_Linear
+    channels: [1024, 1024, 1024, 1024, 3072]
+    lin_neurons: 256
+
+sasv_model: !new:models.sasv.Model
+
+
+epoch_counter: !new:speechbrain.utils.epoch_loop.EpochCounter
+  limit: !ref <number_of_epochs>
+
+lr_scheduler: !new:speechbrain.nnet.schedulers.StepScheduler
+  initial_value: !ref <lr_start>
+  decay_factor: 0.5
+  decay_drop: 5
+
+modules:
+  compute_features: !ref <compute_fbank>
+  mean_var_norm: !ref <mean_var_norm>
+  augment_wavedrop: !ref <augment_wavedrop>
+  augment_speed: !ref <augment_speed>
+  add_rev_noise: !ref <add_rev_noise>
+  embedding_model: !ref <embedding_model>
+  cm_asp_layer: !ref <cm_asp_layer>
+  sasv_model: !ref <sasv_model>
+  cm_loss_metric: !ref <cm_loss_metric>
+  asv_loss_metric: !ref <asv_loss_metric>
+  sasv_loss_metric: !ref <sasv_loss_metric>
+
+label_encoder: !new:speechbrain.dataio.encoder.CategoricalEncoder
+#########-----------------Modules---------------------##########
+#########-------------------End-----------------------##########
+pretrainer: !new:speechbrain.utils.parameter_transfer.Pretrainer
+    collect_in: !ref <save_folder>
+    loadables:
+        embedding_model: !ref <embedding_model>
+    paths:
+        embedding_model: !ref <pretrain_path>/embedding_model.ckpt
+
+#########-----------------Trainer---------------------##########
+#########-----------------Start-----------------------##########
+opt_class: !name:torch.optim.Adam
+  lr: !ref <lr_start>
+
+checkpointer: !new:speechbrain.utils.checkpoints.Checkpointer
+  checkpoints_dir: !ref <save_folder>
+  recoverables:
+    embedding_model: !ref <embedding_model>
+    cm_asp_layer: !ref <cm_asp_layer>
+    sasv_model: !ref <sasv_model>
+    asv_loss_metric: !ref <asv_loss_metric>
+    cm_loss_metric: !ref <cm_loss_metric>
+    normalizer: !ref <mean_var_norm>
+    counter: !ref <epoch_counter>
+#########-----------------Trainer---------------------##########
+#########-------------------End-----------------------##########
