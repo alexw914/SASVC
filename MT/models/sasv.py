@@ -76,7 +76,7 @@ class SASV(sb.Brain):
         # Concatenate labels (due to data augmentation)
         asv_output, cm_output, sasv_output = predictions
         sasv_encoded, _ = batch.sasv_encoded
-        is_train = False
+        
         if stage == sb.Stage.TRAIN:
             bonafide_encoded, _ = batch.bonafide_encoded
             speaker_encoded, _ = batch.speaker_encoded
@@ -87,8 +87,7 @@ class SASV(sb.Brain):
             lens = torch.cat([lens, lens])
 
             asv_loss, prec1 = self.hparams.asv_loss_metric(torch.squeeze(asv_output,1), torch.squeeze(speaker_encoded,1))
-            cm_loss, cm_score = self.modules.cm_loss_metric(torch.squeeze(cm_output,1), torch.squeeze(bonafide_encoded,1),is_train=is_train)
-            is_train = True
+            cm_loss, cm_score = self.modules.cm_loss_metric(torch.squeeze(cm_output,1), torch.squeeze(bonafide_encoded,1),is_train=True)
         sasv_loss = self.modules.sasv_loss_metric(torch.squeeze(sasv_output,1), torch.squeeze(sasv_encoded,1))
 
         # Compute classification error at test time
