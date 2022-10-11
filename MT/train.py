@@ -22,9 +22,11 @@ if __name__ == "__main__":
         overrides=overrides,
     )
     ## fix
+    
     for i in hparams["embedding_model"].parameters():
         i.requires_grad=False
-    
+    run_on_main(hparams["pretrainer"].collect_files)
+    hparams["pretrainer"].load_collected()
 
     datasets = get_dataset(hparams)
     evalsets = get_eval_dataset(hparams)
