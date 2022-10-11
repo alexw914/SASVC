@@ -8,7 +8,7 @@ It takes PLDA backend as classifier, in this way. Unsupervised domain adaptation
 SASV: 1.06%, SV: 1.53%, SPF: 0.64%.
 
 ## Embedding Fusion
-Using Conv1D layer and SEModule to train a SASV model using embeddings from pre-trained asv system and countermeature system. In eval ste, it get results of
+Using Conv1D layer and SEModule to train a SASV model using embeddings from pre-trained asv system and countermeature system provided by SASV baseline system. In eval set, it get results of
 SASV: 0.96% SV: 1.24% SPF: 0.68%.
 
 ## Multi-task
