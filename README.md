@@ -4,7 +4,7 @@ Spoofing-Aware Speaker Verification
 This project provide three ways to realize Sooofing-aware Speaker Verification system. Score Fusion, embedding fusion and muti-task learning.
 
 ## Score Fusion
-It takes PLDA backend as classifier, in this way. Unsupervised domain adaptation and supervised domain adaptation were applied in score fusion method to improve the speaker verification performance. It needs kaldi and asv-subtools.
+It takes PLDA backend as classifier, in this way. Unsupervised domain adaptation and supervised domain adaptation were applied in score fusion method to improve the speaker verification performance. It needs kaldi and asv-subtools. When using pretrained model of ECAPA-TDNN and LIP-Reg adaptation, it gets Speaker Verification EER 1.47%. Countermeasure score produced by Wav2Vec-AASIST EER was 0.20%. The sasv score is the sum of asv score cm score produced by sigmoid function. The finald results on eval set is SASV: 1.06%, SV: 1.53%, SPF: 0.64%.
 
 ## Embedding Fusion
 Using Conv1D layer and SEModule to train a SASV model using embeddings from pre-trained asv system and countermeature system. It get results of
