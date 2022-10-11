@@ -8,8 +8,8 @@ It takes PLDA backend as classifier, in this way. Unsupervised domain adaptation
 
 ## Embedding Fusion
 Using Conv1D layer and SEModule to train a SASV model using embeddings from pre-trained asv system and countermeature system. It get results of
-SASV: 0.96 SV: 1.24 SPF: 0.68 on SASV eval set.
+SASV: 0.96% SV: 1.24% SPF: 0.68% on SASV eval set.
 
 ## Multi-task
-In this method, i used a pretrained asv system and Attentive statistic pooling layers and backend to build a SASV model. In this way, speechbrain toolkit is needed.  SASV: 3.24 SV: 3.99 SPF:1.64 on eval set.
+In this method, i used a pretrained asv system and Attentive statistic pooling layers and backend to build a SASV model. In this way, speechbrain toolkit is needed.  SASV: 3.24% SV: 3.99% SPF: 1.64% on eval set.
 
