@@ -6,10 +6,10 @@ This project provide three ways to realize Sooofing-aware Speaker Verification s
 # Prepare
 
 ##### 1. Prepare embedding file
-    You can refer this offical [project](https://github.com/search?q=SASVC2022). Download the Embedding file. Put the embeddings floder to SF and EF folder.
+You can refer this offical [project](https://github.com/search?q=SASVC2022). Download the Embedding file. Put the embeddings floder to SF and EF folder.
 
 ##### 2. Tools
-    This project need install this tools first
+This project need install this tools first
     1. [kaldi](https://github.com/kaldi-asr/kaldi)
     2. [ASV-subtools](https://github.com/Snowdar/asv-subtools)
     3. [speechbrain](https://github.com/search?q=speechbrain)
