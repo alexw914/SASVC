@@ -31,6 +31,6 @@ for line in trials:
 with open(sys.argv[4],"w") as f:
   for line in asv_scores:
     spkr, utt, asv_score = line.strip().split()
-    sasv_score = sigmoid(cm2score[utt])*sigmoid(float(asv_score))
-    sasv_score = asv_score     
+    sasv_score = cm2score[utt]*sigmoid(float(asv_score))
+#     sasv_score = asv_score     
     f.write("{} {}\n".format(sasv_score, spkrutt2target[spkr+utt]))
