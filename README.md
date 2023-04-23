@@ -10,6 +10,7 @@ You can refer this offical [project](https://github.com/search?q=SASVC2022). Dow
 
 ##### 2. Tools
 This project need install this tools first
+
     1. [kaldi](https://github.com/kaldi-asr/kaldi)
     2. [ASV-subtools](https://github.com/Snowdar/asv-subtools)
     3. [speechbrain](https://github.com/search?q=speechbrain)
