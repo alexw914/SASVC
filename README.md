@@ -17,7 +17,7 @@ This project need install this tools first
 
 ## Score Fusion
 $$S_{sasv} = S_{cm} * sigmoid（S_{asv}）$$
-##### ASV: ECAPA-TDNN + PLDA + LIP-Reg Adaptation SV-EER 1.47%
+##### ASV: ECAPA-TDNN + PLDA + LIP Adaptation SV-EER 1.47%
 It takes PLDA backend as classifier, in this way. Unsupervised domain adaptation and supervised domain adaptation were applied in score fusion method to improve the speaker verification performance.  
 ##### CM: wav2vev-ASSIST(Pretrain + Finetune CM-EER 0.20%)
  score produced by Wav2Vec-AASIST EER was 0.20%. The sasv score is the multiplication of asv score and cm score processed by sigmoid function.
